@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.6.2/joint.css" />
+</head>
+<body>
+    <!-- content -->
+    <div id="myholder"></div>
+
+    <!-- dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.1/backbone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jointjs/3.6.5/joint.js"></script>
+
+    <!-- code -->
+    <script type="text/javascript">
+
+        var namespace = joint.shapes;
+
+        var graph = new joint.dia.Graph({}, { cellNamespace: namespace });
+
+        var paper = new joint.dia.Paper({
+            el: document.getElementById('myholder'),
+            model: graph,
+            width: 600,
+            height: 600,
+            gridSize: 1,
+            cellViewNamespace: namespace
+        });
+
+        var rect = new joint.shapes.standard.Rectangle();
+        rect.position(100, 30);
+        rect.resize(100, 40);
+        rect.attr({
+            body: {
+                fill: 'blue'
+            },
+            label: {
+                text: 'Hello',
+                fill: 'white'
+            }
+        });
+        rect.addTo(graph);
+
+        var rect2 = rect.clone();
+        rect2.translate(300, 0);
+        rect2.attr('label/text', 'World!');
+        rect2.addTo(graph);
+
+        var link = new joint.shapes.standard.Link();
+        link.source(rect);
+        link.target(rect2);
+        link.addTo(graph);
+
+    </script>
+    <button id="addThings">ADD</button>
+    <div id="dialogThing" style="width:300px; height:200px; background:#ccc; display:none;">
+        <label>Class name<input type="text" name="className"></label>
+    </div>
+    <script>
+        var numerOfNode = 100;
+        jQuery(document).ready(function () {
+            $("#addThings").click(function(e){
+                var rectNew = rect.clone();
+                rectNew.translate(300, 0);
+                rectNew.attr('label/text', 'NEW '+numerOfNode);
+                rectNew.addTo(graph);      
+                    
+                var newLink = new joint.shapes.standard.Link();
+                newLink.source(rect2);
+                newLink.target(rectNew);
+                newLink.addTo(graph);           
+
+                numerOfNode ++;
+            });
+        
+            function nodeClicked(e, obj) {  // executed by click and doubleclick handlers
+                var evt = e.copy();
+                var node = obj.part;
+                var type = evt.clickCount === 2 ? "Double-Clicked: " : "Clicked: ";
+                var msg = type + node.data.key + ". ";
+                alert(msg);
+            }
+        });
+    </script>        
+</body>
+</html>
